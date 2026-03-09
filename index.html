@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday Ma Chérie 💖</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@400;600&display=swap');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body { font-family: 'Poppins', sans-serif; overflow: hidden; background: #000; color: #fff; touch-action: none; }
+    
+    .screen { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
+    .screen.active { display: flex; }
+    
+    /* Intro Screen */
+    #introScreen { background: #4E0000; text-align: center; }
+    #introScreen h1 { font-family: 'Dancing Script', cursive; font-size: 4rem; text-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 2rem; padding: 0 20px; line-height: 1.2; }
+    #startBtn { padding: 15px 40px; font-size: 1.5rem; font-weight: 600; color: #4f0000; background: #fff; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: transform 0.2s; font-family: 'Poppins', sans-serif; }
+    #startBtn:active { transform: scale(0.95); }
+    
+    /* Countdown Screen */
+    #countdownScreen { background: #4E0000; }
+    #countdownText { font-size: 8rem; font-weight: bold; text-shadow: 0 4px 10px rgba(0,0,0,0.3); animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    
+    /* Game Screen */
+    #gameScreen { background: #000; }
+    canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    
+    #scoreBoard { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; font-weight: bold; z-index: 20; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+    
+    #giftBoxContainer { position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3); border-radius: 15px; z-index: 20; overflow: hidden; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.3s; }
+    #giftFill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #ff1493, #ff69b4); transition: height 0.3s; z-index: 1; opacity: 0.8; }
+    #giftIcon { position: relative; z-index: 2; font-size: 2rem; transition: transform 0.3s; }
+    
+    .shake { animation: shake 0.5s infinite; }
+    .glow { box-shadow: 0 0 20px #ff1493, 0 0 40px #ff69b4 !important; border-color: #ff1493 !important; }
+    .open-anim { animation: openGift 0.6s forwards; }
+    
+    @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 50% { transform: rotate(0deg); } 75% { transform: rotate(10deg); } 100% { transform: rotate(0deg); } }
+    @keyframes openGift { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+    
+    #messagePopup { position: absolute; top: 80px; left: 50%; transform: translateX(-50%) scale(0.9); width: 90%; max-width: 350px; background: rgba(255, 255, 255, 0.95); padding: 15px 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(255,20,147,0.4); text-align: center; opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 30; pointer-events: none; }
+    #messagePopup h2 { font-family: 'Dancing Script', cursive; font-size: 1.8rem; color: #ff1493; margin-bottom: 5px; }
+    #messagePopup p { font-size: 1rem; font-family: 'Poppins', sans-serif; color: #333; line-height: 1.4; }
+    .popup-icon { font-size: 1.5rem; margin-bottom: 5px; }
+    
+    #player { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(255,255,255,0.8); z-index: 15; pointer-events: none; }
+    
+    .heart { position: absolute; font-size: 2rem; z-index: 10; animation: fall linear forwards; }
+    @keyframes fall { to { transform: translateY(100vh); } }
+    
+    .particle { position: absolute; width: 8px; height: 8px; background: #ff1493; border-radius: 50%; pointer-events: none; z-index: 15; animation: pop 0.5s ease-out forwards; }
+    @keyframes pop { 0% { transform: scale(1) translate(0,0); opacity: 1; } 100% { transform: scale(0) translate(var(--dx), var(--dy)); opacity: 0; } }
+    
+    /* Letter Popup */
+    #letterPopup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+    #letterPopup.visible { opacity: 1; pointer-events: auto; }
+    .letter-card { 
+        background: linear-gradient(135deg, #fff0f5 0%, #ffffff 100%); 
+        color: #222; 
+        padding: 40px 30px; 
+        border-radius: 32px; 
+        width: 90%; 
+        max-width: 450px; 
+        max-height: 70vh;
+        overflow-y: auto;
+        text-align: center; 
+        box-shadow: 0 15px 50px rgba(255, 105, 180, 0.25); 
+        transform: scale(0.8); 
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        scrollbar-width: thin;
+        scrollbar-color: #ffb6c1 transparent;
+    }
+    .letter-card::-webkit-scrollbar { width: 6px; }
+    .letter-card::-webkit-scrollbar-track { background: transparent; }
+    .letter-card::-webkit-scrollbar-thumb { background-color: #ffb6c1; border-radius: 10px; }
+    
+    #letterPopup.visible .letter-card { transform: scale(1); }
+    .letter-card h2 { font-family: 'Great Vibes', cursive; font-size: 3rem; color: #ff1493; margin-bottom: 20px; line-height: 1.2; }
+    .letter-card p { font-family: 'Playfair Display', serif; font-size: 1.1rem; line-height: 1.7; margin-bottom: 15px; color: #333; }
+    #closeLetterBtn { margin-top: 25px; padding: 12px 35px; font-size: 1.1rem; font-weight: bold; color: #fff; background: #ff1493; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 8px 20px rgba(255,20,147,0.4); transition: all 0.3s ease; font-family: 'Poppins', sans-serif; }
+    #closeLetterBtn:hover { background: #ff69b4; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,20,147,0.5); }
+    #closeLetterBtn:active { transform: translateY(1px) scale(0.95); }
+</style>
+</head>
+<body>
+
+<audio id="startMusic" src="start.mp3" loop></audio>
+<audio id="fillMusic" src="fill.mp3"></audio>
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<div id="introScreen" class="screen active">
+    <h1>Happy Birthday<br>Ma Chérie 💖</h1>
+    <button id="startBtn">Start</button>
+</div>
+
+<div id="countdownScreen" class="screen">
+    <div id="countdownText">3</div>
+</div>
+
+<div id="gameScreen" class="screen">
+    <canvas id="starfield"></canvas>
+    <div id="scoreBoard">Score: <span id="score">0</span></div>
+    
+    <div id="giftBoxContainer">
+        <div id="giftFill"></div>
+        <div id="giftIcon">🎁</div>
+    </div>
+
+    <div id="messagePopup" class="popupCard">
+        <div class="popup-icon">⭐</div>
+        <h2 id="popupTitle"></h2>
+        <p id="popupText"></p>
+    </div>
+
+    <div id="player"></div>
+    <div id="heartsContainer"></div>
+</div>
+
+<div id="letterPopup">
+    <div class="letter-card">
+        <h2>My sweetest love, my everything,</h2>
+        <p>Happy Birthday, ya rou7i 💖</p>
+        <p>Today the whole world gets to celebrate the day you came into existence… but honestly? The biggest miracle is that I get to love you.</p>
+        <p>Every morning I wake up grateful that you chose me, that your laugh still makes my heart do that stupid little flip, and that even after all this time your “salam 7abibi” still feels like the warmest hug in the universe.
+           You’re not just my girlfriend—you’re my safe place, my wild adventure, my softest dream and my loudest reason to smile. I fall for you a little more every single day… and today I’m falling extra hard because you deserve the most beautiful year of your life.</p>
+        <p>I promise to keep holding your hand through every sunrise, every late-night talk, every silly fight and every “we made it” moment. I want every birthday from now on to feel like this: you next to me, us against the world, and so much love it doesn’t even fit inside my chest.</p>
+        <p>So blow out those candles, make your wish… but just know that if it’s about me staying forever, that wish already came true the day you said yes to me.</p>
+        <p>I love you more than yesterday, less than tomorrow, and deeper than any words I could ever write.</p>
+        <p>Happy Birthday, habibti dyali… you’re my forever favorite person. 🎂❤️<br>
+           Yours, always and completely,</p>
+        <button id="closeLetterBtn">Close</button>
+    </div>
+</div>
+
+<script>
+    const introScreen = document.getElementById('introScreen');
+    const countdownScreen = document.getElementById('countdownScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const startBtn = document.getElementById('startBtn');
+    const countdownText = document.getElementById('countdownText');
+    const scoreEl = document.getElementById('score');
+    const player = document.getElementById('player');
+    const heartsContainer = document.getElementById('heartsContainer');
+    const giftBoxContainer = document.getElementById('giftBoxContainer');
+    const giftFill = document.getElementById('giftFill');
+    const giftIcon = document.getElementById('giftIcon');
+    const messagePopup = document.getElementById('messagePopup');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupText = document.getElementById('popupText');
+    const letterPopup = document.getElementById('letterPopup');
+    const closeLetterBtn = document.getElementById('closeLetterBtn');
+    
+    const startMusic = document.getElementById('startMusic');
+    const fillMusic = document.getElementById('fillMusic');
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.4;
+
+    fillMusic.addEventListener('ended', () => {
+        bgMusic.play().catch(e => console.log("Audio play prevented"));
+    });
+
+    let score = 0;
+    const GOAL = 22;
+    let gameActive = false;
+    let playerX = window.innerWidth / 2;
+    const playerWidth = 80;
+    const playerHeight = 20;
+    let heartInterval;
+
+    // Starfield Canvas
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for(let i=0; i<150; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            z: Math.random() * canvas.width,
+            size: Math.random() * 2 + 0.5
+        });
+    }
+
+    function drawStars() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        
+        stars.forEach(star => {
+            star.z -= 2;
+            if(star.z <= 0) {
+                star.z = canvas.width;
+                star.x = Math.random() * canvas.width;
+                star.y = Math.random() * canvas.height;
+            }
+            
+            const x = (star.x - canvas.width/2) * (canvas.width / star.z) + canvas.width/2;
+            const y = (star.y - canvas.height/2) * (canvas.width / star.z) + canvas.height/2;
+            const s = star.size * (canvas.width / star.z);
+            
+            ctx.beginPath();
+            ctx.arc(x, y, s, 0, Math.PI*2);
+            ctx.fill();
+        });
+        
+        if(gameActive) requestAnimationFrame(drawStars);
+    }
+
+    // Game Logic
+    startBtn.addEventListener('click', () => {
+        startMusic.play().catch(e => console.log("Audio play prevented"));
+        introScreen.classList.remove('active');
+        countdownScreen.classList.add('active');
+        
+        let count = 3;
+        countdownText.innerText = count;
+        
+        const countInterval = setInterval(() => {
+            count--;
+            if(count > 0) {
+                countdownText.innerText = count;
+                countdownText.style.animation = 'none';
+                void countdownText.offsetWidth; // trigger reflow
+                countdownText.style.animation = 'pulse 1s infinite';
+            } else {
+                clearInterval(countInterval);
+                startGame();
+            }
+        }, 1000);
+    });
+
+    function startGame() {
+        countdownScreen.classList.remove('active');
+        gameScreen.classList.add('active');
+        gameActive = true;
+        drawStars();
+        
+        heartInterval = setInterval(spawnHeart, 800);
+        
+        // Mouse / Touch movement
+        window.addEventListener('mousemove', (e) => {
+            playerX = e.clientX;
+            updatePlayerPos();
+        });
+        window.addEventListener('touchmove', (e) => {
+            playerX = e.touches[0].clientX;
+            updatePlayerPos();
+        });
+        
+        gameLoop();
+    }
+
+    function updatePlayerPos() {
+        // clamp to screen
+        if(playerX < playerWidth/2) playerX = playerWidth/2;
+        if(playerX > window.innerWidth - playerWidth/2) playerX = window.innerWidth - playerWidth/2;
+        player.style.left = playerX + 'px';
+    }
+
+    function spawnHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerText = '💖';
+        heart.style.left = Math.random() * (window.innerWidth - 40) + 'px';
+        heart.style.top = '-40px';
+        
+        // Random fall duration between 3s and 5s
+        const duration = Math.random() * 2 + 3;
+        heart.style.animationDuration = duration + 's';
+        
+        heartsContainer.appendChild(heart);
+        
+        // Remove heart if it goes off screen
+        setTimeout(() => {
+            if(heart.parentElement) heart.remove();
+        }, duration * 1000);
+    }
+
+    function createParticles(x, y) {
+        for(let i=0; i<8; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 50 + 20;
+            p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+            p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+            
+            gameScreen.appendChild(p);
+            setTimeout(() => p.remove(), 500);
+        }
+    }
+
+    let messageTimeout;
+    function showMessage(title, text) {
+        popupTitle.innerText = title;
+        popupText.innerText = text;
+        messagePopup.style.opacity = 1;
+        messagePopup.style.transform = "translateX(-50%) scale(1)";
+        
+        if (messageTimeout) clearTimeout(messageTimeout);
+        messageTimeout = setTimeout(() => { 
+            messagePopup.style.opacity = 0; 
+            messagePopup.style.transform = "translateX(-50%) scale(0.9)";
+        }, 3000);
+    }
+
+    function checkMilestone(currentScore) {
+        if (currentScore === 22) {
+            showMessage("Ton cadeau est prêt 🎁", "Clique sur la boîte cadeau en haut à droite !");
+            return;
+        }
+        
+        if (currentScore > 0 && currentScore % 5 === 0) {
+            switch (currentScore) {
+                case 5:
+                    showMessage("Mon Amour", "Chaque cœur que tu attrapes, c'est un battement de plus que tu fais dans mon âme… Je t’aime fort 💕");
+                    break;
+                case 10:
+                    showMessage("Tu me manques", "10 petits cœurs pour te rappeler que tu es dans toutes mes pensées, jour et nuit… ❤️");
+                    break;
+                case 15:
+                    showMessage("Ma Merveille", "Regarde comme tu es douée… chaque cœur est une preuve que tu es mon plus beau miracle. ✨");
+                    break;
+                case 20:
+                    showMessage("Mon Tout", "20 cœurs d’amour… et pourtant, ce n’est encore rien à côté de tout ce que je ressens pour toi. 💖");
+                    break;
+                case 25:
+                    showMessage("Mon Éternité", "Tu continues de briller dans mon cœur… merci d’être toi, mon amour éternel 🌸");
+                    break;
+                case 30:
+                    showMessage("Pour Toujours", "À chaque cœur, je retombe amoureux de toi… et ça ne s’arrêtera jamais. 💘");
+                    break;
+                default:
+                    showMessage("Je t'aime", `Déjà ${currentScore} cœurs... Mon amour pour toi grandit à chaque instant. 🌹`);
+                    break;
+            }
+        }
+    }
+
+    function gameLoop() {
+        if(!gameActive) return;
+        
+        const hearts = document.querySelectorAll('.heart');
+        const playerRect = player.getBoundingClientRect();
+        
+        hearts.forEach(heart => {
+            const rect = heart.getBoundingClientRect();
+            
+            // Collision detection
+            if (rect.bottom >= playerRect.top && 
+                rect.top <= playerRect.bottom && 
+                rect.right >= playerRect.left && 
+                rect.left <= playerRect.right) {
+                
+                heart.remove();
+                score++;
+                scoreEl.innerText = score;
+                
+                createParticles(rect.left + 15, rect.top + 15);
+                
+                // Update gift fill
+                const fillPercent = Math.min((score / GOAL) * 100, 100);
+                giftFill.style.height = fillPercent + '%';
+                
+                // Milestones
+                checkMilestone(score);
+                
+                if(score >= GOAL && !giftBoxContainer.classList.contains('glow')) {
+                    giftBoxContainer.classList.add('shake', 'glow');
+                    setTimeout(() => {
+                        giftBoxContainer.classList.remove('shake');
+                        giftBoxContainer.classList.add('open-anim');
+                        setTimeout(() => {
+                            giftIcon.innerText = '💖';
+                            startMusic.pause();
+                            startMusic.currentTime = 0;
+                            fillMusic.play().catch(e=>{});
+                        }, 300);
+                    }, 1500);
+                }
+            }
+        });
+        
+        requestAnimationFrame(gameLoop);
+    }
+
+    giftBoxContainer.addEventListener('click', () => {
+        if(score >= GOAL) {
+            letterPopup.classList.add('visible');
+        } else {
+            // Optional: shake if clicked too early
+            giftBoxContainer.classList.add('shake');
+            setTimeout(() => giftBoxContainer.classList.remove('shake'), 500);
+        }
+    });
+
+    closeLetterBtn.addEventListener('click', () => {
+        letterPopup.classList.remove('visible');
+    });
+</script>
+</body>
+</html>
