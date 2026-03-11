@@ -46,7 +46,7 @@
     #messagePopup p { font-size: 1rem; font-family: 'Poppins', sans-serif; color: #333; line-height: 1.4; }
     .popup-icon { font-size: 1.5rem; margin-bottom: 5px; }
     
-    #player { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(255,255,255,0.8); z-index: 15; pointer-events: none; }
+    #player { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(255,255,255,0.8); z-index: 15; pointer-events: none; }
     
     .heart { position: absolute; font-size: 2rem; z-index: 10; animation: fall linear forwards; }
     @keyframes fall { to { transform: translateY(100vh); } }
@@ -92,7 +92,7 @@
 <audio id="bgMusic" src="music.mp3" loop></audio>
 
 <div id="introScreen" class="screen active">
-    <h1>Happy Birthday<br>Ma Chérie 💖</h1>
+    <h1>Happy Birthday<br>Ma Chérie 🖤</h1>
     <button id="startBtn">Start</button>
 </div>
 
@@ -122,14 +122,14 @@
 <div id="letterPopup">
     <div class="letter-card">
         <h2>My sweetest love, my everything,</h2>
-        <p>Happy Birthday, ya rou7i 💖</p>
+        <p>Happy Birthday, ya rou7i 🖤</p>
         <p>Today the whole world gets to celebrate the day you came into existence… but honestly? The biggest miracle is that I get to love you.</p>
         <p>Every morning I wake up grateful that you chose me, that your laugh still makes my heart do that stupid little flip, and that even after all this time your “salam 7abibi” still feels like the warmest hug in the universe.
            You’re not just my girlfriend—you’re my safe place, my wild adventure, my softest dream and my loudest reason to smile. I fall for you a little more every single day… and today I’m falling extra hard because you deserve the most beautiful year of your life.</p>
         <p>I promise to keep holding your hand through every sunrise, every late-night talk, every silly fight and every “we made it” moment. I want every birthday from now on to feel like this: you next to me, us against the world, and so much love it doesn’t even fit inside my chest.</p>
         <p>So blow out those candles, make your wish… but just know that if it’s about me staying forever, that wish already came true the day you said yes to me.</p>
         <p>I love you more than yesterday, less than tomorrow, and deeper than any words I could ever write.</p>
-        <p>Happy Birthday, habibti dyali… you’re my forever favorite person. 🎂❤️<br>
+        <p>Happy Birthday, habibti dyali… you’re my forever favorite person. 🎂🖤<br>
            Yours, always and completely,</p>
         <button id="closeLetterBtn">Close</button>
     </div>
@@ -270,7 +270,7 @@
     function spawnHeart() {
         const heart = document.createElement('div');
         heart.classList.add('heart');
-        heart.innerText = '💖';
+        heart.innerText = '❤️‍🔥';
         heart.style.left = Math.random() * (window.innerWidth - 40) + 'px';
         heart.style.top = '-40px';
         
@@ -326,22 +326,22 @@
         if (currentScore > 0 && currentScore % 5 === 0) {
             switch (currentScore) {
                 case 5:
-                    showMessage("Mon Amour", "Chaque cœur que tu attrapes, c'est un battement de plus que tu fais dans mon âme… Je t’aime fort 💕");
+                    showMessage("Mon Amour", "Chaque cœur que tu attrapes, c'est un battement de plus que tu fais dans mon âme… Je t’aime fort 🖤");
                     break;
                 case 10:
-                    showMessage("Tu me manques", "10 petits cœurs pour te rappeler que tu es dans toutes mes pensées, jour et nuit… ❤️");
+                    showMessage("Tu me manques", "10 petits cœurs pour te rappeler que tu es dans toutes mes pensées, jour et nuit… 🖤");
                     break;
                 case 15:
                     showMessage("Ma Merveille", "Regarde comme tu es douée… chaque cœur est une preuve que tu es mon plus beau miracle. ✨");
                     break;
                 case 20:
-                    showMessage("Mon Tout", "20 cœurs d’amour… et pourtant, ce n’est encore rien à côté de tout ce que je ressens pour toi. 💖");
+                    showMessage("Mon Tout", "20 cœurs d’amour… et pourtant, ce n’est encore rien à côté de tout ce que je ressens pour toi. 🖤");
                     break;
                 case 25:
                     showMessage("Mon Éternité", "Tu continues de briller dans mon cœur… merci d’être toi, mon amour éternel 🌸");
                     break;
                 case 30:
-                    showMessage("Pour Toujours", "À chaque cœur, je retombe amoureux de toi… et ça ne s’arrêtera jamais. 💘");
+                    showMessage("Pour Toujours", "À chaque cœur, je retombe amoureux de toi… et ça ne s’arrêtera jamais. 🖤");
                     break;
                 default:
                     showMessage("Je t'aime", `Déjà ${currentScore} cœurs... Mon amour pour toi grandit à chaque instant. 🌹`);
@@ -384,7 +384,7 @@
                         giftBoxContainer.classList.remove('shake');
                         giftBoxContainer.classList.add('open-anim');
                         setTimeout(() => {
-                            giftIcon.innerText = '💖';
+                            giftIcon.innerText = '❤️‍🔥';
                             startMusic.pause();
                             startMusic.currentTime = 0;
                             fillMusic.play().catch(e=>{});
